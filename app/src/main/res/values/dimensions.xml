@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="sizeAvatar">48dp</dimen>
+    <dimen name="sizeIcon">24dp</dimen>
+    <dimen name="sizeMargin">16dp</dimen>
+</resources>
