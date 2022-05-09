@@ -16,11 +16,8 @@ class PostRepositoryInMemoryImpl : PostRepository {
         "15 мая 2022 года. 14:50:34",
         false,
         999,
-        compactDecimalFormat(999),
         2000,
-        compactDecimalFormat(2000),
-        131,
-        compactDecimalFormat(131)
+        131
     )
 
     private  val data = MutableLiveData(post)
@@ -31,7 +28,7 @@ class PostRepositoryInMemoryImpl : PostRepository {
 
         val newCount = post.countLikes + if (post.likeByMe) -1 else 1
 
-        post = post.copy(likeByMe = !post.likeByMe, countLikes = newCount, countLikesText = compactDecimalFormat(newCount))
+        post = post.copy(likeByMe = !post.likeByMe, countLikes = newCount)
 
         data.value = post
 
@@ -39,29 +36,10 @@ class PostRepositoryInMemoryImpl : PostRepository {
 
     override fun share() {
 
-        val newCount = post.countShare + 1
-
-        post = post.copy(countShare = newCount, countShareText = compactDecimalFormat(newCount))
+        post = post.copy(countShare = post.countShare + 1)
 
         data.value = post
 
     }
-
-    private fun compactDecimalFormat(number: Int): String {
-        val suffix = charArrayOf(' ', 'k', 'M', 'B', 'T', 'P', 'E')
-
-        val numValue = number.toLong()
-        val value = floor(log10(numValue.toDouble())).toInt()
-        val base = value / 3
-
-        return if (value >= 3 && base < suffix.size) {
-            DecimalFormat("#0.0").format(
-                numValue / 10.0.pow((base * 3).toDouble())
-            ) + suffix[base]
-        } else {
-            DecimalFormat("#,##0").format(numValue)
-        }
-    }
-
 
 }
