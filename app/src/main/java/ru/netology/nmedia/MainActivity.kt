@@ -1,7 +1,7 @@
 package ru.netology.nmedia
 
-import android.icu.text.CompactDecimalFormat
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import java.text.DecimalFormat
@@ -18,64 +18,29 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val post = Post(
-            1,
-            "Наименование автора для примера, немного длинее чтобы обрезать!",
-            "18–20 апреля в Москве проходила I Международная Ассамблея Российской академии образования «Ученик в современном мире: формула успеха». Миссия Ассамблеи заключалась в акцентуации новых и оптимизации имеющихся подходов к внедрению на уровнях основного общего и среднего общего образования релевантных методов обучения и воспитания, образовательных технологий, отвечающих запросам современного общества, создание эффективной среды для личностного и предпрофессионального развития обучающихся, личностного и профессионального развития педагогов. http://www.ivanovo.ac.ru/about_the_university/news/11502/",
-            "15 мая 2022 года. 14:50:34",
-             false,
-            999,
-            2000,
-            131
-        )
+        val viewModel: PostViewModel by viewModels()
 
-        binding.apply {
-            textViewAuthorName.text = post.author
-            textViewAuthorDate.text = post.publishedDate
-            textViewContent.text = post.content
-            TextViewFavoriteBorder.text = compactDecimalFormat(post.countLikes)
-            TextViewShare.text = compactDecimalFormat(post.countShare)
-            TextViewVisibility.text = compactDecimalFormat(post.countVisibility)
+        viewModel.data.observe(this) {post ->
 
 
-            setImageAndTextLike(post, binding)
-
-            ImageViewFavoriteBorder.setOnClickListener {
-
-                post.likeByMe = !post.likeByMe
-
-                post.countLikes = post.countLikes + if (post.likeByMe) 1 else -1
-
-                setImageAndTextLike(post, binding)
-
-            }
-
-
-            ImageViewShare.setOnClickListener {
-
-                post.countShare = post.countShare + 1
-
+            binding.apply {
+                textViewAuthorName.text = post.author
+                textViewAuthorDate.text = post.publishedDate
+                textViewContent.text = post.content
+                TextViewFavoriteBorder.text = compactDecimalFormat(post.countLikes)
                 TextViewShare.text = compactDecimalFormat(post.countShare)
+                TextViewVisibility.text = compactDecimalFormat(post.countVisibility)
+
+                binding.ImageViewFavoriteBorder.setImageResource(
+                    if (post.likeByMe) R.drawable.ic_baseline_favorite_24_red else R.drawable.ic_baseline_favorite_border_24
+                )
 
             }
 
         }
 
-    }
-
-    private fun setImageAndTextLike (post: Post, binding: ActivityMainBinding){
-
-        binding.apply {
-
-            binding.ImageViewFavoriteBorder.setImageResource(
-
-                if (post.likeByMe) R.drawable.ic_baseline_favorite_24_red else R.drawable.ic_baseline_favorite_border_24
-
-            )
-
-            binding.TextViewFavoriteBorder.text = compactDecimalFormat(post.countLikes)
-
-        }
+        binding.ImageViewFavoriteBorder.setOnClickListener { viewModel.like() }
+        binding.ImageViewShare.setOnClickListener { viewModel.share() }
 
     }
 
@@ -94,5 +59,6 @@ class MainActivity : AppCompatActivity() {
             DecimalFormat("#,##0").format(numValue)
         }
     }
+
 
 }
